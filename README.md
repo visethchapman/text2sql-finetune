@@ -139,6 +139,29 @@ same pattern as any RAG-based text-to-SQL system.
 
 ---
 
+## Conclusion
+
+A 1.5B open-source model, fine-tuned with LoRA on 280 synthetic
+question/SQL pairs, scored **6/12 vs Claude Sonnet 4.5's 12/12** on the
+same eval — half the accuracy at zero incremental cost per query. Against
+its own raw base (2/12), the LoRA adapter delivered a **3× lift**.
+
+Three things I take from this:
+
+1. **Fine-tuning small models works, within its bracket.** For simple
+   aggregations (peaks, totals, filters), the fine-tuned model is a
+   real substitute for a frontier API — free, faster, air-gapped.
+2. **Advanced SQL is where the ceiling shows up.** GROUP BY rules,
+   alias scoping, and cross-domain timezone joins still need the
+   broader world-model of a frontier LLM.
+3. **The full workflow matters more than the final score.** Real value
+   in production text-to-SQL systems comes from routing easy questions
+   to a cheap local model and hard ones to Claude — this project shows
+   the "cheap local model" side of that split is achievable at ~$1
+   of training cost.
+
+---
+
 ## Cost tally
 
 | Item | Cost |
