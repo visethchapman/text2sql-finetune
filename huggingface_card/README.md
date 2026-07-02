@@ -125,7 +125,7 @@ Full generation + dedupe pipeline in [`text2sql-finetune`](https://github.com/vi
 
 ## Portfolio context
 
-Built as a self-study project to demonstrate the full LLM fine-tuning workflow: synthetic dataset generation, deduplication (including test-set leak check), LoRA/PEFT on HuggingFace TRL, and evaluation against an existing multi-agent baseline. See [`LESSONS.md`](https://github.com/visethchapman/text2sql-finetune/blob/main/LESSONS.md) for what went wrong along the way (Claude redundancy, GPU compatibility, QLoRA-vs-LoRA trade-off).
+Built as a self-study project to demonstrate the full LLM fine-tuning workflow: synthetic dataset generation, deduplication (including test-set leak check), LoRA/PEFT on HuggingFace TRL, and evaluation against an existing multi-agent baseline. The [repo README](https://github.com/visethchapman/text2sql-finetune#what-i-learned) has the "What I learned" section — Claude data redundancy, GPU compatibility, QLoRA-vs-LoRA trade-off.
 
 ## License
 

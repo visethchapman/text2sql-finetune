@@ -1,11 +1,14 @@
 # text2sql-finetune
 
-LoRA fine-tune of [Qwen2.5-Coder-1.5B](https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct)
-on ERCOT text-to-SQL. Trains on Kaggle's free T4 in ~5 min, runs locally on
-a Mac at $0/query.
+A portfolio project that walks through the full LLM fine-tuning workflow —
+synthetic dataset generation, LoRA training, HuggingFace Hub deployment,
+and evaluation — using Qwen2.5-Coder-1.5B on ERCOT text-to-SQL. The
+question being tested: **can a small open-source specialist come close to a
+frontier model on a narrow task?**
 
 Companion to [`energy-text2sql`](https://github.com/visethchapman/energy-text2sql):
-same Postgres schema, same 12-question eval harness.
+same Postgres schema, same 12-question eval harness. Trains on Kaggle's
+free T4 in ~5 min. Adapter runs locally on a Mac at $0 / query.
 
 > **Adapter on HuggingFace Hub:** [visethchapman/ercot-text2sql-qwen-1.5b-lora](https://huggingface.co/visethchapman/ercot-text2sql-qwen-1.5b-lora)
 
@@ -43,7 +46,7 @@ The training data is 280 such pairs in HuggingFace chat-template format:
 ```
 
 The model learns to map `(schema + question) → SQL`. Not `question → SQL` —
-that's why the schema must be in the system prompt at inference too.
+the schema must be in the system prompt at inference too.
 
 ---
 
@@ -52,7 +55,7 @@ that's why the schema must be in the system prompt at inference too.
 | Layer | Choice |
 |---|---|
 | Base model | `Qwen/Qwen2.5-Coder-1.5B-Instruct` |
-| Method | Plain LoRA in fp16 (see [LESSONS.md](LESSONS.md) for why not QLoRA) |
+| Method | Plain LoRA in fp16 |
 | Training | HuggingFace `trl.SFTTrainer` + `peft.LoraConfig` |
 | Trainable params | 18.5M / 1.56B (1.18%) |
 | GPU | Kaggle T4 (free tier, ~4.5 min wall clock) |
@@ -74,8 +77,6 @@ that's why the schema must be in the system prompt at inference too.
   ↓ intra dedupe: same SQL skeleton (literals stripped)   (–165)
 310 unique  →  280 train  /  15 val  /  15 test
 ```
-
-35% intra-redundancy is a real finding — see [LESSONS.md](LESSONS.md#1-claude-generated-training-data-is-35-redundant).
 
 ---
 
@@ -101,6 +102,40 @@ cd ../energy-text2sql
 uv run python eval/run.py --agent qwen_base --save   # baseline (no LoRA)
 uv run python eval/run.py --agent finetuned --save   # with our LoRA
 ```
+
+---
+
+## What I learned
+
+### 1. Synthetic data from a strong model is noisier than it looks
+
+Ran 500 pairs through 20 independent Claude batches. **35% collapsed to
+the same SQL skeleton** — same pattern, different literal values.
+Independent batches with no cross-batch memory + a narrow domain =
+Claude keeps producing the same handful of natural questions.
+
+Post-hoc dedupe on SQL skeleton (literals stripped) was cheaper than
+prompt-engineering for diversity.
+
+### 2. QLoRA isn't always the right pick for a small model
+
+Started with QLoRA (4-bit), and Kaggle's free-tier GPU options fought
+me at every step (multi-device tensor splits on T4×2, unsupported CUDA
+capability on P100). Realized QLoRA's compression only pays off for 7B+
+models on small VRAM. A 1.5B model in fp16 is ~3 GB — fits any 16 GB
+card. Switched to plain LoRA, everything worked.
+
+Rule of thumb: **use QLoRA when you actually need the compression, not
+because the acronym is fancier.**
+
+### 3. A fine-tuned model doesn't magically remember its training schema
+
+First smoke test used a stub system prompt ("Return valid Postgres SQL")
+and the model hallucinated a table (`daily_weather` instead of
+`eia.demand`). At training, the schema was in every system prompt — the
+model learned `(schema + question) → SQL`, not the schema itself. **The
+schema must be in the system prompt at inference too.** This is the
+same pattern as any RAG-based text-to-SQL system.
 
 ---
 
