@@ -3,8 +3,8 @@
 A portfolio project that walks through the full LLM fine-tuning workflow —
 synthetic dataset generation, LoRA training, HuggingFace Hub deployment,
 and evaluation — using Qwen2.5-Coder-1.5B on ERCOT text-to-SQL. The
-question being tested: **can a small open-source specialist come close to a
-frontier model on a narrow task?**
+question being tested: **can a small fine-tuned open-source model come close
+to Claude Sonnet 4.5 on a narrow task?**
 
 Companion to [`energy-text2sql`](https://github.com/visethchapman/energy-text2sql):
 same Postgres schema, same 12-question eval harness. Trains on Kaggle's
@@ -150,10 +150,10 @@ Three things I take from this:
 
 1. **Fine-tuning small models works, within its bracket.** For simple
    aggregations (peaks, totals, filters), the fine-tuned model is a
-   real substitute for a frontier API — free, faster, air-gapped.
+   real substitute for the Claude API — free, faster, air-gapped.
 2. **Advanced SQL is where the ceiling shows up.** GROUP BY rules,
    alias scoping, and cross-domain timezone joins still need the
-   broader world-model of a frontier LLM.
+   broader world-model of a larger model like Claude.
 3. **The full workflow matters more than the final score.** Real value
    in production text-to-SQL systems comes from routing easy questions
    to a cheap local model and hard ones to Claude — this project shows
@@ -178,7 +178,7 @@ Three things I take from this:
 
 - **Synthetic training data from Claude inherits Claude's biases.**
 - **12-question eval is small** — conclusions are directional.
-- **A 1.5B model does not beat frontier APIs.** Story is proximity, not victory.
+- **A 1.5B model does not beat Claude Sonnet 4.5.** Story is proximity, not victory.
 
 ---
 
