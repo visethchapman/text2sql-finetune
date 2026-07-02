@@ -66,6 +66,22 @@ the schema must be in the system prompt at inference too.
 
 ---
 
+## Choices
+
+Three decisions worth calling out:
+
+- **Base model — Qwen2.5-Coder-1.5B**: already pre-trained on code
+  including SQL, so the fine-tune inherits SQL syntax knowledge rather
+  than relearning it. At 1.5 billion parameters, it fits Kaggle's free
+  T4 GPU with room to spare and runs locally on a Mac at ~3 GB memory.
+- **LoRA over full fine-tuning**: trains ~1% of the parameters (18.5M
+  of 1.56B). Lower VRAM, faster training, portable adapter (~85 MB), and
+  no catastrophic forgetting of the base model's general skills.
+- **LoRA in fp16 over QLoRA in 4-bit**: for a 1.5B model, the 3 GB
+  fp16 weights fit any 16 GB GPU with headroom — QLoRA's compression
+  isn't needed. Dropping `bitsandbytes` also eliminated a whole family
+  of GPU-compatibility failures on Kaggle's free tier.
+
 ## Dataset pipeline
 
 ```
