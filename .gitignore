@@ -1,0 +1,28 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# Private notes — never push
+interview-notes.md
+*.private.md
+notes/
+
+# Generated dataset + model artifacts (kept local / pushed to HF Hub instead)
+data/raw/
+data/validated/
+data/sft/
+*.jsonl
+adapters/
+*.safetensors
+*.bin
+*.pt
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.DS_Store
+.ipynb_checkpoints/

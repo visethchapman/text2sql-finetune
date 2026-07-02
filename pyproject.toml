@@ -1,0 +1,26 @@
+[project]
+name = "text2sql-finetune"
+version = "0.1.0"
+description = "LoRA fine-tune Qwen2.5-Coder-1.5B on ERCOT text-to-SQL; eval against frontier baseline"
+requires-python = "==3.12.*"
+dependencies = [
+    "anthropic>=0.103.0",
+    "psycopg[binary]>=3.2",
+    "python-dotenv>=1.0",
+    "transformers>=4.46",
+    "peft>=0.13",
+    "accelerate>=1.0",
+    "torch>=2.5",
+    "datasets>=3.0",
+    "huggingface_hub>=0.26",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
